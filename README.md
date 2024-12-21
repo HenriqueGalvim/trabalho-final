@@ -18,8 +18,8 @@ Antes de iniciar, certifique-se de que você tem as seguintes ferramentas instal
 ### Passo 1: Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git https://github.com/HenriqueGalvim/trabalho-final.git
+cd aps-final
 ```
 
 ### Passo 2: Inicie o ambiente com Docker
@@ -27,7 +27,7 @@ cd seu-repositorio
 Certifique-se de que o Docker está instalado e rodando. Em seguida, execute:
 
 ```bash
-docker-compose up --build -d
+docker-compose up -d
 ```
 
 > 📌 Este comando:
