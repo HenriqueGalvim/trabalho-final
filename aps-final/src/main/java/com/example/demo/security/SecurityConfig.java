@@ -22,20 +22,21 @@ public class SecurityConfig {
 
         userDetailsManager.createUser(
                 User.withUsername("admin")
-                .password(encoder.encode("admin123"))
-                .roles("ADMIN")
-                .build());
+                    .password(encoder.encode("admin123"))
+                    .roles("ADMIN")
+                    .build());
 
-        userDetailsManager.createUser(User.withUsername("gerente")
-                .password(encoder.encode("gerente123"))
-                .roles("GERENTE")
-                .build());
+        userDetailsManager.createUser(
+                User.withUsername("gerente")
+                    .password(encoder.encode("gerente123"))
+                    .roles("GERENTE")
+                    .build());
 
-        userDetailsManager.createUser(User.withUsername("secretaria")
-                .password(encoder.encode("secretaria123"))
-                .roles("SECRETARIA")
-                .build());
-
+        userDetailsManager.createUser(
+                User.withUsername("secretaria")
+                    .password(encoder.encode("secretaria123"))
+                    .roles("SECRETARIA")
+                    .build());
 
         return userDetailsManager;
     }
@@ -51,13 +52,30 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                        "/cursos/**",
-                                "/fotos/**",
-                                "/categorias/**",
-                                "/atividades/**"
-                                ).permitAll()
+                                "/public/**",
+                                "/login",
+                                "/error"
+                        ).permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").authenticated()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/gerente/**").hasRole("GERENTE")
+                        .requestMatchers("/secretaria/**").hasRole("SECRETARIA")
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/home", true)
+                        .failureUrl("/login?error=true")
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .permitAll())
+                .headers(headers -> headers.frameOptions().sameOrigin()); // Para permitir H2-console
+
         return http.build();
     }
 }
